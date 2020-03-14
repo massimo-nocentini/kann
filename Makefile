@@ -1,5 +1,5 @@
 CC=			gcc
-CFLAGS=		-g -Wall -Wextra -Wc++-compat -O2
+CFLAGS=		-g -Wall -Wextra -Wc++-compat -O2 -fPIC
 CFLAGS_LIB=	#-ansi -pedantic -Wno-long-long # ANSI C does not have inline which affects performance a little bit
 CPPFLAGS=	-DHAVE_PTHREAD
 INCLUDES=	-I.
@@ -19,7 +19,7 @@ endif
 .c.o:
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(CPPFLAGS) $< -o $@
 
-all:kautodiff.o kann.o kann_extra/kann_data.o $(EXE)
+all:kautodiff.o kann.o kann_extra/kann_data.o $(EXE) shared
 
 kautodiff.o:kautodiff.c
 		$(CC) -c $(CFLAGS) $(CFLAGS_LIB) $(INCLUDES) $(CPPFLAGS) -o $@ $<
@@ -56,6 +56,10 @@ clean:
 
 depend:
 		(LC_ALL=C; export LC_ALL; makedepend -Y -- $(CFLAGS) $(DFLAGS) -- *.c kann_extra/*.c examples/*.c)
+
+shared:
+	$(CC) -shared -o libkann.so kann.o
+	$(CC) -shared -o libkautodiff.so kautodiff.o
 
 # DO NOT DELETE
 
