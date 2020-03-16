@@ -30,6 +30,9 @@ kann.o:kann.c
 kann_extra/kann_data.o:kann_extra/kann_data.c
 		$(CC) -c $(CFLAGS) -DHAVE_ZLIB $< -o $@
 
+kann_extra/kseq.o:kann_extra/kseq.h
+		$(CC) -c $(CFLAGS) -DHAVE_ZLIB $< -o $@
+
 examples/mlp:examples/mlp.o kautodiff.o kann.o kann_extra/kann_data.o
 		$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
@@ -52,14 +55,15 @@ examples/mnist-cnn:examples/mnist-cnn.o kautodiff.o kann.o kann_extra/kann_data.
 		$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-		rm -fr *.o */*.o a.out */a.out *.a *.dSYM */*.dSYM $(EXE)
+		rm -fr *.so *.o */*.o a.out */a.out *.a *.dSYM */*.dSYM $(EXE)
 
 depend:
 		(LC_ALL=C; export LC_ALL; makedepend -Y -- $(CFLAGS) $(DFLAGS) -- *.c kann_extra/*.c examples/*.c)
 
 shared:
-	$(CC) -shared -o libkann.so kann.o
 	$(CC) -shared -o libkautodiff.so kautodiff.o
+	$(CC) -L. -shared -o libkann.so kann.o -lkautodiff
+	cd kann_extra && $(CC) -shared -o libkann_data.so kann_data.o
 
 # DO NOT DELETE
 
