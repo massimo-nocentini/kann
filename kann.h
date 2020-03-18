@@ -218,6 +218,8 @@ kad_node_t *kann_layer_rnn2(int *offset, kad_node_t **par, kad_node_t *in, kad_n
 kad_node_t *kann_layer_gru2(int *offset, kad_node_t **par, kad_node_t *in, kad_node_t *h0, int rnn_flag);
 
 /* operations on network with a single input node and a single output node */
+int kann_train_fnn1_cb(kann_t *ann, float lr, int mini_size, int max_epoch, int max_drop_streak, float frac_val, int n, float **_x, float **_y,
+                       void (*handle_stats)(int, double, int, float, int, double, int, float));
 int kann_train_fnn1(kann_t *ann, float lr, int mini_size, int max_epoch, int max_drop_streak, float frac_val, int n, float **_x, float **_y);
 float kann_cost_fnn1(kann_t *a, int n, float **x, float **y);
 const float *kann_apply1(kann_t *a, float *x);

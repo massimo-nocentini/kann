@@ -846,7 +846,24 @@ float kann_grad_clip(float thres, int n, float *g)
  *** @@XY: simpler API for network with a single input/output ***
  ****************************************************************/
 
-int kann_train_fnn1(kann_t *ann, float lr, int mini_size, int max_epoch, int max_drop_streak, float frac_val, int n, float **_x, float **_y)
+void print_epoch_stats(int i, double train_cost, int n_train_base, float class_error, int n_val, double val_cost, int n_val_base, float validation_class_error) {
+	if (kann_verbose >= 3) {
+		fprintf(stderr, "epoch: %d; training cost: %g", i, train_cost);
+		if (n_train_base) fprintf(stderr, " (class error: %.2f%%)", class_error);
+		if (n_val > 0) {
+			fprintf(stderr, "; validation cost: %g", val_cost);
+			if (n_val_base) fprintf(stderr, " (class error: %.2f%%)", validation_class_error);
+		}
+		fputc('\n', stderr);
+	}
+}
+
+int kann_train_fnn1(kann_t *ann, float lr, int mini_size, int max_epoch, int max_drop_streak, float frac_val, int n, float **_x, float **_y) {
+	return kann_train_fnn1_cb(ann, lr, mini_size, max_epoch, max_drop_streak, frac_val, n, _x, _y, &print_epoch_stats);
+}
+
+int kann_train_fnn1_cb(kann_t *ann, float lr, int mini_size, int max_epoch, int max_drop_streak, float frac_val, int n, float **_x, float **_y, 
+					  void (*handle_stats)(int, double, int, float, int, double, int, float))
 {
 	int i, j, *shuf, n_train, n_val, n_in, n_out, n_var, n_const, drop_streak = 0, min_set = 0;
 	float **x, **y, *x1, *y1, *r, min_val_cost = FLT_MAX, *min_x, *min_c;
@@ -907,15 +924,10 @@ int kann_train_fnn1(kann_t *ann, float lr, int mini_size, int max_epoch, int max
 			n_proc += ms;
 		}
 		if (n_val > 0) val_cost /= n_val;
-		if (kann_verbose >= 3) {
-			fprintf(stderr, "epoch: %d; training cost: %g", i+1, train_cost);
-			if (n_train_base) fprintf(stderr, " (class error: %.2f%%)", 100.0f * n_train_err / n_train);
-			if (n_val > 0) {
-				fprintf(stderr, "; validation cost: %g", val_cost);
-				if (n_val_base) fprintf(stderr, " (class error: %.2f%%)", 100.0f * n_val_err / n_val);
-			}
-			fputc('\n', stderr);
-		}
+		
+		handle_stats(i+1, train_cost, n_train_base, 100.0f * n_train_err / n_train, 
+					 n_val, val_cost, n_val_base, 100.0f * n_val_err / n_val);
+		
 		if (i >= max_drop_streak && n_val > 0) {
 			if (val_cost < min_val_cost) {
 				min_set = 1;

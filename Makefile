@@ -55,7 +55,7 @@ examples/mnist-cnn:examples/mnist-cnn.o kautodiff.o kann.o kann_extra/kann_data.
 		$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-		rm -fr *.so *.o */*.o a.out */a.out *.a *.dSYM */*.dSYM $(EXE)
+		rm -fr *.so kann_extra/*.so *.o */*.o a.out */a.out *.a *.dSYM */*.dSYM $(EXE)
 
 depend:
 		(LC_ALL=C; export LC_ALL; makedepend -Y -- $(CFLAGS) $(DFLAGS) -- *.c kann_extra/*.c examples/*.c)
