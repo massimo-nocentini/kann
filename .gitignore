@@ -5,3 +5,10 @@
 *.kan
 *.dSYM
 a.out
+examples/ae
+examples/inspect
+examples/mlp
+examples/mnist-cnn
+examples/rnn-bit
+examples/textgen
+examples/vae
