@@ -64,6 +64,12 @@ kad_node_t *kad_var(float *x, float *g, int n_d, ...)
 	return p;
 }
 
+void kad_ext_flag(kad_node_t *t, uint32_t flag, int update)
+{
+	uint32_t f = update ? t->ext_flag : 0x0;
+	t->ext_flag |= f | flag;
+}
+
 static inline kad_node_t *kad_finalize_node(kad_node_t *s) /* a helper function */
 {
 	int i;

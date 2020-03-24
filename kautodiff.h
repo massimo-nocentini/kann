@@ -144,6 +144,9 @@ kad_node_t *kad_var(float *x, float *g, int n_d, ...); /* a variable; gradients 
 kad_node_t *kad_const(float *x, int n_d, ...);         /* a constant; no gradients computed; not unrolled */
 kad_node_t *kad_feed(int n_d, ...);                    /* an input/output; no gradients computed; unrolled */
 
+/* accessor for setting the `ext_flag` field */
+void kad_ext_flag(kad_node_t *t, uint32_t flag, int update);
+
 /* operators taking two operands */
 kad_node_t *kad_add(kad_node_t *x, kad_node_t *y); /* f(x,y) = x + y (generalized element-wise addition; f[i*n+j]=x[i*n+j]+y[j], n=kad_len(y), 0<j<n, 0<i<kad_len(x)/n) */
 kad_node_t *kad_sub(kad_node_t *x, kad_node_t *y); /* f(x,y) = x - y (generalized element-wise subtraction) */
