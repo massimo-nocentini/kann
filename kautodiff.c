@@ -76,6 +76,17 @@ void kad_ext_label(kad_node_t *t, int32_t label, int update)
 	t->ext_label |= f | label;
 }
 
+void kad_eval_state(kad_node_t *t, int32_t can_eval)
+{
+	t->tmp = can_eval ? 1 : -1;
+}
+
+void kad_x_drand_normal(kad_node_t *t)
+{
+	for (int i = 0; i < kad_len(t); ++i)
+		t->x[i] = kad_drand_normal(0);
+}
+
 static inline kad_node_t *kad_finalize_node(kad_node_t *s) /* a helper function */
 {
 	int i;
@@ -2405,4 +2416,9 @@ void kad_check_grad(int n, kad_node_t **a, int from)
 		else fprintf(stderr, "passed\n");
 	} else fprintf(stderr, "skipped\n");
 	free(delta); free(g0);
+}
+
+int kad_dimensions(const kad_node_t *p)
+{
+	return kad_len(p);
 }

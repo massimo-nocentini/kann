@@ -159,6 +159,18 @@ int kann_find(const kann_t *a, uint32_t ext_flag, int32_t ext_label)
 	return k == 1? r : k == 0? -1 : -2;
 }
 
+kad_node_t *kann_find_node(const kann_t *a, uint32_t ext_flag, int32_t ext_label)
+{
+	return a->v[kann_find(a, ext_flag, ext_label)];
+}
+
+float *kann_feval(kann_t *a, uint32_t ext_flag, int ext_label)
+{
+	int r = kann_eval(a, ext_flag, ext_label);
+	return kann_find_node(a, ext_flag, ext_label)->x;
+	
+}
+
 int kann_feed_bind(kann_t *a, uint32_t ext_flag, int32_t ext_label, float **x)
 {
 	int i, k;

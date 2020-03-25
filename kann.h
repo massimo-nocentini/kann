@@ -146,6 +146,8 @@ int kann_class_error(const kann_t *ann, int *base);
  * @return >=0 if found; -1 if not found; -2 if found multiple
  */
 int kann_find(const kann_t *a, uint32_t ext_flag, int32_t ext_label);
+kad_node_t *kann_find_node(const kann_t *a, uint32_t ext_flag, int32_t ext_label);
+float *kann_feval(kann_t *a, uint32_t ext_flag, int ext_label);
 
 /**
  * Get the size of a feed node, assuming mini-batch size 1

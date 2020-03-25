@@ -147,6 +147,8 @@ kad_node_t *kad_feed(int n_d, ...);                    /* an input/output; no gr
 /* accessor for setting both `ext_flag` and `ext_label` fields */
 void kad_ext_flag(kad_node_t *t, uint32_t flag, int update);
 void kad_ext_label(kad_node_t *t, int32_t label, int update);
+void kad_eval_state(kad_node_t *t, int32_t can_eval);
+void kad_x_drand_normal(kad_node_t *t);
 
 /* operators taking two operands */
 kad_node_t *kad_add(kad_node_t *x, kad_node_t *y); /* f(x,y) = x + y (generalized element-wise addition; f[i*n+j]=x[i*n+j]+y[j], n=kad_len(y), 0<j<n, 0<i<kad_len(x)/n) */
@@ -246,5 +248,8 @@ static inline int kad_len(const kad_node_t *p) /* calculate the size of p->x */
 	for (i = 0; i < p->n_d; ++i) n *= p->d[i];
 	return n;
 }
+
+int kad_dimensions(const kad_node_t *p); /* a proxy for kad_len */
+
 
 #endif
