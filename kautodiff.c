@@ -70,6 +70,12 @@ void kad_ext_flag(kad_node_t *t, uint32_t flag, int update)
 	t->ext_flag |= f | flag;
 }
 
+void kad_ext_label(kad_node_t *t, int32_t label, int update)
+{
+	int32_t f = update ? t->ext_label : 0x0;
+	t->ext_label |= f | label;
+}
+
 static inline kad_node_t *kad_finalize_node(kad_node_t *s) /* a helper function */
 {
 	int i;
