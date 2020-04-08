@@ -67,6 +67,13 @@ extern "C" {
 #endif
 
 /**
+ * Accessors
+ */
+int         kann_accessor_n(const kann_t *a);
+kad_node_t  **kann_accessor_v(const kann_t *a);
+void        kann_nodes_do(const kann_t *a, void (*handle_kad_node_t)(int, kad_node_t *));
+
+/**
  * Generate a network from a computational graph
  *
  * A network must have at least one scalar cost node (i.e. whose n_d==0). It

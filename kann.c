@@ -999,3 +999,20 @@ const float *kann_apply1(kann_t *a, float *x)
 	kad_eval_at(a->n, a->v, i_out);
 	return a->v[i_out]->x;
 }
+
+int	kann_accessor_n(const kann_t *a)
+{
+	return a->n;
+}
+
+kad_node_t **kann_accessor_v(const kann_t *a)
+{
+	return a->v;
+}
+
+void kann_nodes_do(const kann_t *a, void (*handle_kad_node_t)(int, kad_node_t *))
+{
+	for (int i = 0; i < a->n; ++i) {
+		handle_kad_node_t(i, a->v[i]);
+	}
+}

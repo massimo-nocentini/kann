@@ -13,6 +13,63 @@ typedef struct {
 	volatile int lock;
 } kad_rng_t;
 
+
+/**************************
+ *** Accessors		    ***
+ **************************/
+ 
+uint8_t kad_accessor_n_d(kad_node_t *a)
+{
+	return a->n_d;
+}
+
+uint8_t kad_accessor_flag(kad_node_t *a)
+{
+	return a->flag;
+}
+
+uint16_t kad_accessor_op(kad_node_t *a)
+{
+	return a->op;
+}
+
+char *kad_accessor_op_name(kad_node_t *a)
+{
+	return kad_op_name[a->op];
+}
+
+// kad_op_f  kad_accessor_op_function(kad_node_t *a)
+// {
+// 	return kad_op_list[a->op];
+// }
+
+int32_t   kad_accessor_n_child(kad_node_t *a)
+{
+	return a->n_child;
+}
+
+kad_node_t **kad_accessor_child(kad_node_t *a)
+{
+	return a->child;
+}
+
+void kad_children_do(const kad_node_t *a, void (*handle_kad_node_t)(int, kad_node_t *))
+{
+	for (int i = 0; i < a->n_child; ++i) {
+		handle_kad_node_t(i, a->child[i]);
+	}
+}
+
+int32_t   kad_accessor_ext_label(kad_node_t *a)
+{
+	return a-> ext_label;
+}
+
+uint32_t   kad_accessor_ext_flag(kad_node_t *a)
+{
+	return a->ext_flag;
+}
+
 /**********************
  * Graph construction *
  **********************/
@@ -2422,3 +2479,4 @@ int kad_dimensions(const kad_node_t *p)
 {
 	return kad_len(p);
 }
+
