@@ -232,16 +232,21 @@ void kad_check_grad(int n, kad_node_t **a, int from);
 /**
  * Accessors for bindings.
  */
-uint8_t   kad_accessor_n_d(kad_node_t *a);
-uint8_t   kad_accessor_flag(kad_node_t *a);
-uint16_t  kad_accessor_op(kad_node_t *a);
-char      *kad_accessor_op_name(kad_node_t *a);
+uint8_t       kad_accessor_n_d(kad_node_t *a);
+uint8_t       kad_accessor_flag(kad_node_t *a);
+uint16_t      kad_accessor_op(kad_node_t *a);
+char         *kad_accessor_op_name(kad_node_t *a);
 // kad_op_f  kad_accessor_op_function(kad_node_t *a);
-int32_t   kad_accessor_n_child(kad_node_t *a);
-kad_node_t **kad_accessor_child(kad_node_t *a);
-void      kad_children_do(const kad_node_t *a, void (*handle_kad_node_t)(int, kad_node_t *));
-int32_t   kad_accessor_ext_label(kad_node_t *a);
-uint32_t   kad_accessor_ext_flag(kad_node_t *a);
+int32_t       kad_accessor_n_child(kad_node_t *a);
+kad_node_t  **kad_accessor_child(kad_node_t *a);
+void          kad_children_do(const kad_node_t *a, void (*handle_kad_node_t)(int, kad_node_t *));
+int32_t       kad_accessor_ext_label(kad_node_t *a);
+uint32_t      kad_accessor_ext_flag(kad_node_t *a);
+kad_node_t   *kad_accessor_pre(kad_node_t *a);
+void          kad_x_memset(const kad_node_t *p, int v); /* to set the internal values */
+int           kad_dimensions(const kad_node_t *p); /* a proxy for kad_len */
+
+
 
 #ifdef __cplusplus
 }
@@ -262,8 +267,6 @@ static inline int kad_len(const kad_node_t *p) /* calculate the size of p->x */
 	for (i = 0; i < p->n_d; ++i) n *= p->d[i];
 	return n;
 }
-
-int kad_dimensions(const kad_node_t *p); /* a proxy for kad_len */
 
 
 

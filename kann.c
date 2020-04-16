@@ -139,6 +139,31 @@ void kann_delete(kann_t *a)
 	kann_delete_unrolled(a);
 }
 
+int kann_urnn_start(kann_t *ann, int batch_size)
+{
+	int i, j, n, cnt = 0;
+	for (i = 0; i < ann->n; ++i) {
+		kad_node_t *p = ann->v[i];
+		if (p->pre && p->n_d >= 2 && p->pre->n_d == p->n_d && p->pre->n_child == 0 && kad_len(p)/p->d[0] == kad_len(p->pre)/p->pre->d[0])
+			p->pre->flag = 0;
+	}
+	kann_set_batch_size(ann, batch_size);
+	for (i = 0; i < ann->n; ++i) {
+		kad_node_t *p = ann->v[i];
+		if (p->pre && p->n_d >= 2 && p->pre->n_d == p->n_d && p->pre->n_child == 0 && kad_len(p) == kad_len(p->pre)) {
+			kad_node_t *q = p->pre;
+			n = kad_len(p) / p->d[0];
+			memset(p->x, 0, p->d[0] * n * sizeof(float));
+			if (q->x)
+				for (j = 0; j < p->d[0]; ++j)
+					memcpy(&p->x[j * n], q->x, n * sizeof(float));
+			q->x = p->x;
+			++cnt;
+		}
+	}
+	return cnt;
+}
+
 static void kann_switch_core(kann_t *a, int is_train)
 {
 	int i;

@@ -70,6 +70,11 @@ uint32_t   kad_accessor_ext_flag(kad_node_t *a)
 	return a->ext_flag;
 }
 
+kad_node_t   *kad_accessor_pre(kad_node_t *a)
+{
+	return a->pre;
+}
+
 /**********************
  * Graph construction *
  **********************/
@@ -2478,5 +2483,10 @@ void kad_check_grad(int n, kad_node_t **a, int from)
 int kad_dimensions(const kad_node_t *p)
 {
 	return kad_len(p);
+}
+
+void kad_x_memset(const kad_node_t *p, int v) 
+{
+	memset(p->x, v, kad_len(p) * sizeof(float));
 }
 
