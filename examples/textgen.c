@@ -48,6 +48,7 @@ tg_data_t *tg_init(const char *fn)
 	tg_data_t *tg;
 	tg = (tg_data_t*)calloc(1, sizeof(tg_data_t));
 	tg->data = tg_read_file(fn, &tg->len);
+	//fprintf(stderr, "len: %d; values: %d %d %d %d %d", tg->len, tg->data[0], tg->data[1], tg->data[2], tg->data[3], tg->data[4]);
 	for (i = 0; i < tg->len; ++i)
 		tg->c2i[tg->data[i]] = 1;
 	for (i = j = 0; i < 256; ++i)
@@ -64,6 +65,9 @@ tg_data_t *tg_init(const char *fn)
 		if (tg->data[i] == '\n' && tg->data[i-1] == '\n' && i - st > 1)
 			tg->para[k] = &tg->data[st], tg->para_len[k++] = i - st, st = i + 1;
 	if (i - st > 1) tg->para[k] = &tg->data[st], tg->para_len[k++] = i - st;
+	// for (i = 0; i < tg->n_para; ++i) {
+	// 	fprintf(stderr, "%d ", tg->para_len[i]);
+	// }
 	for (i = 0; i < tg->len; ++i)
 		tg->data[i] = tg->c2i[tg->data[i]];
 	return tg;
@@ -215,8 +219,11 @@ void tg_train(kann_t *ann, const tg_data_t *tg, float lr, int ulen, int vlen, in
 		double cost = 0.0;
 		int c, j, b, tot = 0, ctot = 0, n_cerr = 0;
 		for (i = 0; i < batch_len; i += mbs * cs * ulen) {
-			for (b = 0; b < mbs; ++b)
-				p[b] = tg->data + (int)((tg->len - ulen * cs - 1) * kad_drand(0)) + 1;
+			for (b = 0; b < mbs; ++b) {
+				int offset = (int)((tg->len - ulen * cs - 1) * kad_drand(0)) + 1;
+				p[b] = tg->data + offset;
+				// fprintf(stderr, "%d ", offset);
+			}
 			for (j = 0; j < ua->n; ++j) // reset initial hidden values to zero
 				if (ua->v[j]->pre)
 					memset(ua->v[j]->x, 0, kad_len(ua->v[j]) * sizeof(float));
@@ -233,8 +240,13 @@ void tg_train(kann_t *ann, const tg_data_t *tg, float lr, int ulen, int vlen, in
 							y[u][b * n_char + p[b][u]] = 1.0f;
 					}
 					p[b] += ulen;
+					// for (int kj = 0; kj < 10; ++kj) {
+					// 	fprintf(stderr, "p[b][%d]: %d ", kj, p[b][kj]);
+					// }
+					// fprintf(stderr, "\n");
 				}
 				cost += kann_cost(ua, 0, 1) * ulen * mbs;
+				// fprintf(stderr, "%g ", cost);
 				n_cerr += kann_class_error(ua, &b);
 				tot += ce_len * mbs, ctot += b;
 				if (grad_clip > 0.0f) kann_grad_clip(grad_clip, n_var, ua->g);
