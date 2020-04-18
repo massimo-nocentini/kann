@@ -60,19 +60,24 @@ void kad_children_do(const kad_node_t *a, void (*handle_kad_node_t)(int, kad_nod
 	}
 }
 
-int32_t   kad_accessor_ext_label(kad_node_t *a)
+int32_t kad_accessor_ext_label(kad_node_t *a)
 {
 	return a-> ext_label;
 }
 
-uint32_t   kad_accessor_ext_flag(kad_node_t *a)
+uint32_t kad_accessor_ext_flag(kad_node_t *a)
 {
 	return a->ext_flag;
 }
 
-kad_node_t   *kad_accessor_pre(kad_node_t *a)
+kad_node_t *kad_accessor_pre(kad_node_t *a)
 {
 	return a->pre;
+}
+
+float *kad_accessor_x(kad_node_t *a)
+{
+	return a->x;
 }
 
 /**********************
