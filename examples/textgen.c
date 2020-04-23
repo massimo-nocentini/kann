@@ -108,8 +108,12 @@ void tg_gen(FILE *fp, kann_t *ann, float temp, int len, const int c2i[256], cons
 		kad_node_t *p = ann->v[c];
 		if (p->pre) {
 			int l = kad_len(p);
-			for (i = 0; i < l; ++i)
+			// fprintf(fp, "\nParent %d: ", c + 1);
+			for (i = 0; i < l; ++i) {
+				// fprintf(fp, "(%g, ", p->x[i]);
 				p->x[i] = 2.0 * kann_drand() - 1.0;
+				// fprintf(fp, "%g) ", p->x[i]);
+			}
 		}
 	}
 	if (seed) {
@@ -123,22 +127,39 @@ void tg_gen(FILE *fp, kann_t *ann, float temp, int len, const int c2i[256], cons
 			memset(x, 0, n_char * sizeof(float));
 			x[c] = 1.0f;
 			y = kann_apply1(ann, x);
+			// fprintf(stderr, "\ny: ");
+			// for(int k = 0; k < n_char; ++k) {
+			// 	fprintf(stderr, "%g ", y[k]);
+			// }
 			for (c = 0; c < n_char; ++c)
 				if (max < y[c]) max = y[c], max_c = c;
+			// fprintf(stderr, " | %d", max_c);
 			c = max_c;
 		}
+		// fprintf(stderr, "c: %d; i2c: %c.\n", c, i2c[c]);
 		fprintf(fp, "%s%c", seed, i2c[c]);
 	} else c = c2i[(int)' '];
+
+	// fprintf(stderr, "c: %d; i2c: ", c);
+	// for(int k = 0; k < 256; ++k) {
+	// 	fprintf(stderr, "%d ", i2c[k]);
+	// }
+
 	for (i = 0; i < len; ++i) {
 		float s, r;
 		const float *y;
 		memset(x, 0, n_char * sizeof(float));
 		x[c] = 1.0f;
 		y = kann_apply1(ann, x);
+		// fprintf(stderr, "\ny: ");
+		// for(int k = 0; k < n_char; ++k) {
+		// 	fprintf(stderr, "%g ", y[k]);
+		// }
 		r = kann_drand();
 		for (c = 0, s = 0.0f; c < n_char; ++c)
 			if (s + y[c] >= r) break;
 			else s += y[c];
+		// fprintf(stderr, "\nr: %g; c: %d; char: %c\n   ", r, c, i2c[c]);
 		fputc(i2c[c], fp);
 	}
 	fputc('\n', fp);
@@ -216,17 +237,21 @@ void tg_train(kann_t *ann, const tg_data_t *tg, float lr, int ulen, int vlen, in
 	kann_feed_bind(ua, KANN_F_IN,  100, x);
 	kann_feed_bind(ua, KANN_F_TRUTH, 0, y);
 	for (epoch = 0; epoch < max_epoch; ++epoch) {
+		// fprintf(stderr, " ****************************************************************** \n");
 		double cost = 0.0;
 		int c, j, b, tot = 0, ctot = 0, n_cerr = 0;
 		for (i = 0; i < batch_len; i += mbs * cs * ulen) {
+			// fprintf(stderr, "i: %d \np: ", i);
 			for (b = 0; b < mbs; ++b) {
 				int offset = (int)((tg->len - ulen * cs - 1) * kad_drand(0)) + 1;
 				p[b] = tg->data + offset;
-				// fprintf(stderr, "%d ", offset);
+				// fprintf(stderr, "(%d, %d, %d, %d) ", offset, p[b][-1], p[b][0], p[b][1]);
 			}
 			for (j = 0; j < ua->n; ++j) // reset initial hidden values to zero
-				if (ua->v[j]->pre)
+				if (ua->v[j]->pre) {
 					memset(ua->v[j]->x, 0, kad_len(ua->v[j]) * sizeof(float));
+					// fprintf(stderr, "\nPre: %d", j);
+				}
 			for (c = 0; c < cs; ++c) {
 				int ce_len = c? ulen : ulen - vlen;
 				for (u = 0; u < ulen; ++u) {
@@ -240,13 +265,13 @@ void tg_train(kann_t *ann, const tg_data_t *tg, float lr, int ulen, int vlen, in
 							y[u][b * n_char + p[b][u]] = 1.0f;
 					}
 					p[b] += ulen;
+					
 					// for (int kj = 0; kj < 10; ++kj) {
-					// 	fprintf(stderr, "p[b][%d]: %d ", kj, p[b][kj]);
+					// 	fprintf(stderr, "\nepoch: %d, pred: %d, p[%d][%d]: %d ", epoch, p[b][kj-1], b, kj, p[b][kj]);
 					// }
-					// fprintf(stderr, "\n");
 				}
 				cost += kann_cost(ua, 0, 1) * ulen * mbs;
-				// fprintf(stderr, "%g ", cost);
+				// fprintf(stderr, "\nCurrent cost: %g", cost);
 				n_cerr += kann_class_error(ua, &b);
 				tot += ce_len * mbs, ctot += b;
 				if (grad_clip > 0.0f) kann_grad_clip(grad_clip, n_var, ua->g);
@@ -254,7 +279,7 @@ void tg_train(kann_t *ann, const tg_data_t *tg, float lr, int ulen, int vlen, in
 			}
 		}
 		fprintf(stderr, "epoch: %d; running cost: %g (class error: %.2f%%)\n", epoch+1, cost / tot, 100.0 * n_cerr / ctot);
-		tg_gen(stderr, ann, 0.4f, 100, tg->c2i, "is");
+		// tg_gen(stderr, ann, 0.4f, 100, tg->c2i, "is");
 		if (fn) tg_save(fn, ann, tg->c2i);
 	}
 	kann_delete_unrolled(ua);
